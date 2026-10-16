@@ -1,0 +1,12 @@
+// use prisma-8
+
+model Video {
+  id            String              @id @default(uuid())
+  title         String
+  author        String
+  description   String?
+  preview       String
+  video         String
+  isArchived    Boolean             @default(false)
+  createdAt     TimestamptzString   @default(now())
+}
