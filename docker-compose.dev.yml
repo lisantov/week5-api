@@ -1,0 +1,56 @@
+# Development overrides: hot reload for backend and frontend.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# The whole package directories are bind-mounted so edits (including
+# tsconfig.json, prisma.config.ts and migrations) are picked up live:
+#   * backend  -> `tsx watch`
+#   * frontend -> Vite dev server (HMR through the edge nginx)
+#
+# Uploaded files are written to /app/uploads (UPLOADS_DIR) — a named volume
+# outside of the bind mount. Otherwise Docker would create the nested
+# `backend/uploads` mountpoint as root inside the bind-mounted source tree.
+#
+# Entrypoints:
+#   http://localhost       -> frontend (via the edge nginx)
+#   http://localhost:5173  -> Vite dev server directly
+#   http://localhost:3000  -> backend API directly
+#   http://localhost:5050  -> pgAdmin
+
+services:
+  backend:
+    build:
+      target: dev
+    command: ["npx", "--no-install", "tsx", "watch", "src/main.ts"]
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    volumes:
+      - ./backend:/app/backend
+
+  frontend:
+    build:
+      target: dev
+    environment:
+      # Used by vite.config.ts to proxy /videos and /uploads inside Docker.
+      VITE_PROXY_TARGET: http://backend:3000
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./frontend:/app/frontend
+      # Keep the container's dependencies; don't inherit the host's node_modules.
+      - frontend-node-modules:/app/frontend/node_modules
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1:5173/ >/dev/null 2>&1 || exit 1",
+        ]
+
+  nginx:
+    volumes:
+      - ./docker/nginx/edge.dev.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  frontend-node-modules:

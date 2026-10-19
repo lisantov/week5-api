@@ -1,0 +1,162 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0f1115;
+  color: #e8eaed;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.count {
+  color: #8b909a;
+  font-size: 14px;
+}
+
+.message {
+  color: #8b909a;
+}
+
+.message.error {
+  color: #ff7b72;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  display: block;
+  padding: 0;
+  border: 1px solid #242830;
+  border-radius: 12px;
+  background: #161a21;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #3a6df0;
+}
+
+.card-preview {
+  aspect-ratio: 16 / 9;
+  background: #0b0d11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #565b66;
+  font-size: 13px;
+}
+
+.card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-body {
+  padding: 12px 14px;
+}
+
+.card-body h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.author {
+  margin: 0;
+  color: #8b909a;
+  font-size: 13px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+.modal {
+  position: relative;
+  width: min(900px, 100%);
+  background: #161a21;
+  border: 1px solid #242830;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modal video {
+  width: 100%;
+  max-height: 70vh;
+  background: #000;
+  display: block;
+}
+
+.modal-body {
+  padding: 16px 20px;
+}
+
+.modal-body h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.description {
+  margin: 12px 0 0;
+  color: #b7bcc5;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
