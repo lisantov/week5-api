@@ -17,9 +17,16 @@ body {
 
 .header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
   gap: 16px;
   margin-bottom: 24px;
+}
+
+.header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
 }
 
 .header h1 {
@@ -99,6 +106,12 @@ body {
   font-size: 13px;
 }
 
+.views {
+  margin: 6px 0 0;
+  color: #8b909a;
+  font-size: 12px;
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -159,4 +172,146 @@ body {
 
 .close:hover {
   background: rgba(0, 0, 0, 0.85);
+}
+
+/* ---------------------------------------------------------------- create form */
+
+.form-modal {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.video-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.video-form h2 {
+  margin: 0 0 2px;
+  font-size: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #b7bcc5;
+}
+
+.field input[type="text"],
+.field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #2f3640;
+  border-radius: 8px;
+  background: #0f1115;
+  color: #e8eaed;
+  font: inherit;
+  font-size: 14px;
+}
+
+.field input[type="text"]:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #3a6df0;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.field input[type="file"] {
+  color: #b7bcc5;
+  font-size: 13px;
+}
+
+.field input[type="file"]::file-selector-button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: 1px solid #2f3640;
+  border-radius: 8px;
+  background: #161a21;
+  color: #e8eaed;
+  cursor: pointer;
+}
+
+.field input[type="file"]::file-selector-button:hover {
+  border-color: #3a6df0;
+}
+
+.file-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.file-name {
+  overflow: hidden;
+  color: #8b909a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.form-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 123, 114, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 123, 114, 0.1);
+  color: #ff7b72;
+  font-size: 13px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.primary,
+.ghost {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.primary {
+  border: 1px solid transparent;
+  background: #3a6df0;
+  color: #fff;
+}
+
+.primary:hover:not(:disabled) {
+  background: #2f5bd0;
+}
+
+.ghost {
+  border: 1px solid #2f3640;
+  background: transparent;
+  color: #e8eaed;
+}
+
+.ghost:hover:not(:disabled) {
+  border-color: #3a6df0;
+}
+
+.primary:disabled,
+.ghost:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 520px) {
+  .file-fields {
+    grid-template-columns: 1fr;
+  }
 }

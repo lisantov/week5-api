@@ -5,5 +5,6 @@ export type Video = {
   description: string | null;
   preview: string;
   video: string;
+  views: number;
   createdAt: string;
 };

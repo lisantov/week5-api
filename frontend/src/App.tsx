@@ -1,5 +1,17 @@
 import { useEffect, useState } from "react";
+import CreateVideoForm from "./CreateVideoForm";
 import type { Video } from "./types";
+
+function viewsLabel(views: number): string {
+  const mod10 = views % 10;
+  const mod100 = views % 100;
+
+  if (mod10 === 1 && mod100 !== 11) return "просмотр";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+    return "просмотра";
+  }
+  return "просмотров";
+}
 
 export default function App() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -8,6 +20,7 @@ export default function App() {
   );
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<Video | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   useEffect(() => {
     fetch("/videos")
@@ -26,27 +39,68 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!selected) return;
+    if (!selected && !createOpen) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelected(null);
+      if (event.key === "Escape") {
+        setSelected(null);
+        setCreateOpen(false);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected]);
+  }, [selected, createOpen]);
+
+  function handleCreated(video: Video) {
+    setVideos((current) => [video, ...current]);
+    setStatus("ready");
+    setCreateOpen(false);
+  }
+
+  async function openVideo(video: Video) {
+    setSelected(video);
+
+    try {
+      const response = await fetch(`/videos/${video.id}/views`, {
+        method: "POST",
+      });
+      if (!response.ok) return;
+
+      const data = (await response.json()) as { id: string; views: number };
+      setVideos((current) =>
+        current.map((item) =>
+          item.id === data.id ? { ...item, views: data.views } : item,
+        ),
+      );
+      setSelected((current) =>
+        current && current.id === data.id
+          ? { ...current, views: data.views }
+          : current,
+      );
+    } catch {
+      // Counting a view must never prevent playback.
+    }
+  }
 
   return (
     <div className="page">
       <header className="header">
-        <h1>Видео</h1>
-        {status === "ready" && (
-          <span className="count">{videos.length} видео</span>
-        )}
+        <div className="header-title">
+          <h1>Видео</h1>
+          {status === "ready" && (
+            <span className="count">{videos.length} видео</span>
+          )}
+        </div>
+        <button className="primary" onClick={() => setCreateOpen(true)}>
+          + Добавить видео
+        </button>
       </header>
 
       {status === "loading" && <p className="message">Загрузка…</p>}
       {status === "error" && <p className="message error">{error}</p>}
       {status === "ready" && videos.length === 0 && (
-        <p className="message">Пока нет видео</p>
+        <p className="message">
+          Пока нет видео — нажмите «Добавить видео», чтобы загрузить первое.
+        </p>
       )}
 
       <div className="grid">
@@ -54,7 +108,7 @@ export default function App() {
           <button
             key={video.id}
             className="card"
-            onClick={() => setSelected(video)}
+            onClick={() => void openVideo(video)}
           >
             <div className="card-preview">
               {video.preview ? (
@@ -72,6 +126,9 @@ export default function App() {
             <div className="card-body">
               <h2>{video.title}</h2>
               <p className="author">{video.author}</p>
+              <p className="views">
+                {video.views} {viewsLabel(video.views)}
+              </p>
             </div>
           </button>
         ))}
@@ -91,6 +148,9 @@ export default function App() {
             <div className="modal-body">
               <h2>{selected.title}</h2>
               <p className="author">{selected.author}</p>
+              <p className="views">
+                {selected.views} {viewsLabel(selected.views)}
+              </p>
               {selected.description && (
                 <p className="description">{selected.description}</p>
               )}
@@ -102,6 +162,20 @@ export default function App() {
             >
               ×
             </button>
+          </div>
+        </div>
+      )}
+
+      {createOpen && (
+        <div className="overlay" onClick={() => setCreateOpen(false)}>
+          <div
+            className="modal form-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CreateVideoForm
+              onCreated={handleCreated}
+              onCancel={() => setCreateOpen(false)}
+            />
           </div>
         </div>
       )}

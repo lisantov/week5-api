@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Inject,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -37,5 +38,10 @@ export class VideosController {
   @Post()
   create(@Body() dto: CreateVideoDto) {
     return this.videosService.createVideo(dto);
+  }
+
+  @Post(":id/views")
+  registerView(@Param("id") id: string) {
+    return this.videosService.registerView(id);
   }
 }

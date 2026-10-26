@@ -46,6 +46,14 @@ npm run dev:api
 
 4. `GET /uploads/previews/<file>` / `GET /uploads/videos/<file>` — serves the
    files (Range support, so `<video>` seeking works).
+5. `POST /videos/:id/views` — atomically increments the view counter and
+   responds with `{ "id": "...", "views": 3 }` (404 if the video does not
+   exist).
+
+In the web UI the same flow is available via the **«Добавить видео»** button:
+choose a cover image and an MP4/WAV file, fill in the title and author
+(description optional) and submit. The card appears in the grid immediately.
+Each card shows its view count; opening a video increments it once.
 
 ## Docker Compose
 

@@ -12,6 +12,7 @@ export async function listVideos(limit = 20) {
     "description",
     "preview",
     "video",
+    "views",
     "isArchived",
     "createdAt",
   )
@@ -27,12 +28,13 @@ export async function listVideos(limit = 20) {
       description: v.description ?? null,
       preview: v.preview,
       video: v.video,
+      views: v.views,
       createdAt: v.createdAt,
     }));
 }
 
 export async function createVideo(
-  body: Omit<Video, "id" | "createdAt" | "isArchived">,
+  body: Omit<Video, "id" | "createdAt" | "isArchived" | "views">,
 ) {
   const video = await db.orm.public.Video.create({
     title: body.title,
@@ -49,8 +51,28 @@ export async function createVideo(
     description: video.description,
     preview: video.preview,
     video: video.video,
+    views: video.views,
     createdAt: video.createdAt,
   };
+}
+
+/**
+ * Atomically increments the view counter and returns the new value.
+ * Returns `null` when no video with the given id exists.
+ */
+export async function registerVideoView(id: string): Promise<number | null> {
+  const plan = db.sql.public.Video
+    .update((fields, fns) => ({
+      views: fns.raw`${fields.views} + 1`.returns("pg/int4@1"),
+    }))
+    .where((fields, fns) => fns.eq(fields.id, id))
+    .returning("views")
+    .build();
+
+  const rows = await db.runtime().query(plan);
+  const row = rows[0];
+
+  return row ? Number(row.views) : null;
 }
 
 export type Video = Awaited<ReturnType<typeof listVideos>>[number];

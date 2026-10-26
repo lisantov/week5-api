@@ -3,6 +3,7 @@ import {
   db,
   listVideos,
   createVideo as createVideoRecord,
+  registerVideoView as registerVideoViewRecord,
   type Video,
 } from "./prisma/videos";
 
@@ -15,8 +16,12 @@ export class PrismaService {
   }
 
   createVideo(
-    body: Omit<Video, "id" | "createdAt" | "isArchived">,
+    body: Omit<Video, "id" | "createdAt" | "isArchived" | "views">,
   ): Promise<Video> {
     return createVideoRecord(body);
+  }
+
+  registerVideoView(id: string): Promise<number | null> {
+    return registerVideoViewRecord(id);
   }
 }

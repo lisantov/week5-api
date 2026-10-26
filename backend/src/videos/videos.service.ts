@@ -1,4 +1,4 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { StorageService } from "../storage/storage.service.js";
 import type { CreateVideoDto } from "./dto/create-video.dto.js";
@@ -42,5 +42,15 @@ export class VideosService {
       preview,
       video,
     });
+  }
+
+  async registerView(id: string) {
+    const views = await this.prismaService.registerVideoView(id);
+
+    if (views === null) {
+      throw new NotFoundException("Video not found");
+    }
+
+    return { id, views };
   }
 }
